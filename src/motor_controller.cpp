@@ -96,7 +96,7 @@ bool MotorController::synchronized() {
     
     int diff = pos0 - pos1;
 
-    if(abs(diff)<FEEDBACK_OFFSET || abs(diff-res)<FEEDBACK_OFFSET) {
+    if(abs(diff)<2*FEEDBACK_OFFSET || abs(abs(diff)-res)<2*FEEDBACK_OFFSET) {
         return true;
     } else {
         return false;
