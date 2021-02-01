@@ -23,7 +23,7 @@
 
 EncoderMotor encMtr0 = EncoderMotor(MOTOR0_DIR_1, MOTOR0_DIR_2, MOTOR0_PWM, ENCODER0_A, ENCODER0_B, ENCODER_RES);
 EncoderMotor encMtr1 = EncoderMotor(MOTOR1_DIR_1, MOTOR1_DIR_2, MOTOR1_PWM, ENCODER1_A, ENCODER1_B, ENCODER_RES, true);
-MotorController mtrController = MotorController(255, &encMtr0, &encMtr1);
+MotorController mtrController = MotorController(SPEED, &encMtr0, &encMtr1);
 Motion motion = Motion(mtrController);
 Thread serialThread = Thread();
 
