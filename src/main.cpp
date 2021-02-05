@@ -1,25 +1,29 @@
 #include <Arduino.h>
 #include <Thread.h>
+ 
 #include "motion.h"
 #include "motor_controller.h"
 
+// USING HC06
+#define BT_RX 18 //DUE TX
+#define BT_TX 19 //DUE RX
+
 #define ENCODER_RES (26*75)
+#define SPEED 255
 
 #define MOTOR0_DIR_1 22
 #define MOTOR0_DIR_2 23
 #define MOTOR0_PWM 13
-#define ENCODER0_A 18
-#define ENCODER0_B 19
+#define ENCODER0_A 30
+#define ENCODER0_B 31
 #define ENCODER0_INT ENCODER0_A //pin21, ENCODER1_A
 
 #define MOTOR1_DIR_1 24
 #define MOTOR1_DIR_2 25
 #define MOTOR1_PWM 12
-#define ENCODER1_A 20
-#define ENCODER1_B 21
+#define ENCODER1_A 32
+#define ENCODER1_B 33
 #define ENCODER1_INT ENCODER1_A //pin20
-
-#define SPEED 255
 
 EncoderMotor encMtr0 = EncoderMotor(MOTOR0_DIR_1, MOTOR0_DIR_2, MOTOR0_PWM, ENCODER0_A, ENCODER0_B, ENCODER_RES);
 EncoderMotor encMtr1 = EncoderMotor(MOTOR1_DIR_1, MOTOR1_DIR_2, MOTOR1_PWM, ENCODER1_A, ENCODER1_B, ENCODER_RES, true);
@@ -46,8 +50,9 @@ void reportCallback() {
 }
 
 void setup() {
-  Serial.begin(115200);
-  
+  Serial.begin(9600);
+  Serial1.begin(9600);
+
   pinMode(MOTOR0_DIR_1, OUTPUT);
   pinMode(MOTOR0_DIR_2, OUTPUT);
   pinMode(MOTOR0_PWM, OUTPUT);
@@ -71,8 +76,8 @@ void loop() {
     serialThread.run();
 
   if(motion.checkStandby()) {
-    if(Serial.available()) {
-      char msg = Serial.read();
+    if(Serial1.available()) {
+      char msg = Serial1.read();
       switch(msg) { 
         case 'w':
           motion.goForward();  break;
@@ -91,7 +96,8 @@ void loop() {
       }
     }
   } else {
-    while(Serial.available())
-      Serial.read(); //empty buffer
+    while(Serial1.available()) {
+      Serial1.read(); //empty buffer
+    }
   }
 }
