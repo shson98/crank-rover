@@ -7,7 +7,9 @@
 #define BT_TX 13
 #define EN_PIN 12
 
-#define BUTTON_UP 0
+#define JOY_UP 800
+#define JOY_DOWN 200
+#define BUTTON_UP 1
 #define BUTTON_DOWN 0
 
 SoftwareSerial BTSerial(BT_RX, BT_TX);
@@ -16,10 +18,10 @@ const int JOYSTICK_Y = A1;
 const int BUTTON_B=3;
 const int BUTTON_D=5;
 int y_pos;
-int B_pos;
-int D_pos;
+int b_pos;
+int d_pos;
 
-byte msg;
+char msg;
 
 void setup() {
   pinMode(EN_PIN,OUTPUT);
@@ -36,35 +38,37 @@ void setup() {
 
 void loop() {
   y_pos=analogRead(JOYSTICK_Y);
-  B_pos=digitalRead(BUTTON_B);
-  D_pos=digitalRead(BUTTON_D);
+  b_pos=digitalRead(BUTTON_B);
+  d_pos=digitalRead(BUTTON_D);
 
-  if (y_pos > 700 && B_pos==BUTTON_UP && D_pos==BUTTON_UP) {
+  if (y_pos > JOY_UP && d_pos==BUTTON_UP && b_pos==BUTTON_UP) {
     msg = 'w';
-  } else if (y_pos > 700 && B_pos==BUTTON_DOWN && D_pos==BUTTON_UP) {
+  } else if (y_pos > JOY_UP && d_pos==BUTTON_DOWN && b_pos==BUTTON_UP) {
     msg = 'q';
-  } else if (y_pos > 700 && B_pos==BUTTON_UP && D_pos==BUTTON_DOWN) {
+  } else if (y_pos > JOY_UP && d_pos==BUTTON_UP && b_pos==BUTTON_DOWN) {
     msg = 'e';
-  } else if (y_pos < 300 && B_pos==BUTTON_UP && D_pos==BUTTON_UP) {
+  } else if (y_pos < JOY_DOWN && d_pos==BUTTON_UP && b_pos==BUTTON_UP) {
     msg = 's';
-  } else if (y_pos < 300 && B_pos==BUTTON_DOWN && D_pos==BUTTON_UP) {
+  } else if (y_pos < JOY_DOWN && d_pos==BUTTON_DOWN && b_pos==BUTTON_UP) {
     msg = 'z';
-  } else if (y_pos < 300 && B_pos==BUTTON_UP && D_pos==BUTTON_DOWN) {
+  } else if (y_pos < JOY_DOWN && d_pos==BUTTON_UP && b_pos==BUTTON_DOWN) {
     msg = 'c';
-  } else if (B_pos==BUTTON_DOWN && D_pos==BUTTON_UP) {
+  } else if (d_pos==BUTTON_DOWN && b_pos==BUTTON_UP) {
     msg = 'a';
-  } else if (B_pos==BUTTON_UP && D_pos==BUTTON_DOWN) {
+  } else if (d_pos==BUTTON_UP && b_pos==BUTTON_DOWN) {
     msg = 'd';
+  } else {
+    msg = 0;
   }
 
   BTSerial.print(msg);
   
-  Serial.print(" & y : ");
+  Serial.print("y : ");
   Serial.print(y_pos);
   Serial.print("& B : ");
-  Serial.print(B_pos);
+  Serial.print(b_pos);
   Serial.print("& D : ");
-  Serial.print(D_pos);
+  Serial.print(d_pos);
   Serial.print(" msg : ");
   Serial.print(msg);
 }

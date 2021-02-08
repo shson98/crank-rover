@@ -78,6 +78,8 @@ void loop() {
   if(motion.checkStandby()) {
     if(Serial1.available()) {
       char msg = Serial1.read();
+      Serial.print("Read: ");
+      Serial.println(msg);
       switch(msg) { 
         case 'w':
           motion.goForward();  break;
@@ -97,7 +99,8 @@ void loop() {
     }
   } else {
     while(Serial1.available()) {
-      Serial1.read(); //empty buffer
+      Serial.print("Drop: ");
+      Serial.println((char)Serial1.read()); //empty buffer
     }
   }
 }
