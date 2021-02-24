@@ -58,7 +58,7 @@ void EncoderMotor::stop() {
     analogWrite(PWM_PIN, 0);
 }
 
-MotorController::MotorController(int velocity,EncoderMotor* encMtr0, EncoderMotor* encMtr1):VELOCITY(velocity) {
+MotorController::MotorController(EncoderMotor* encMtr0, EncoderMotor* encMtr1) {
       encMtrs = new EncoderMotor*[2];
       encMtrs[0] = encMtr0;
       encMtrs[1] = encMtr1;
@@ -67,25 +67,44 @@ MotorController::MotorController(int velocity,EncoderMotor* encMtr0, EncoderMoto
       deltaPulse[1] = 0;
 }
 
-void MotorController::rotateMotorForward(int i) {
-    deltaPulse[i] = encMtrs[i]->ENCODER_RES;
+void MotorController::rotateMotorForward(int i, uint16_t delta) {
+    if(delta == 0) deltaPulse[i] = encMtrs[i]->ENCODER_RES;
+    else deltaPulse[i] = delta;
     updateMotorControl(i);
 }
 
-void MotorController::rotateMotorBackward(int i) {
-    deltaPulse[i] = -encMtrs[i]->ENCODER_RES;
+void MotorController::rotateMotorBackward(int i, uint16_t delta) {
+    if(delta == 0) deltaPulse[i] = -encMtrs[i]->ENCODER_RES;
+    else deltaPulse[i] = -delta;
     updateMotorControl(i);
 }
 
-void MotorController::updateMotorControl(int i) {
+void MotorController::updateMotorControl(int i, bool debug) {
+    encMtrs[i]->updateEncoder();
+
+    int speed = encMtrs[i]->SPEED;
+    int counterpart = abs(1-i);
+
+    //synchronize speed
+    if (deltaPulse[i] > deltaPulse[counterpart]) {
+        speed -= 20;
+    } else if (deltaPulse[i] < deltaPulse[counterpart]) {
+        speed += 20;
+    }
+    
+    //write output
     if (deltaPulse[i] > 0) {
-        encMtrs[i]->rotateDir1(VELOCITY);
+        encMtrs[i]->rotateDir1(speed);
         deltaPulse[i]--;
     } else if (deltaPulse[i] < 0) {
-        encMtrs[i]->rotateDir2(VELOCITY);
+        encMtrs[i]->rotateDir2(speed);
         deltaPulse[i]++;
     } else { //feedback
-        encMtrs[i]->adjustZero();
+        if(!debug) {
+            encMtrs[i]->adjustZero();
+        } else {
+            encMtrs[i]->stop();
+        }
     }
 }
 
@@ -96,7 +115,7 @@ bool MotorController::synchronized() {
     
     int diff = pos0 - pos1;
 
-    if(abs(diff)<2*FEEDBACK_OFFSET || abs(abs(diff)-res)<2*FEEDBACK_OFFSET) {
+    if(abs(diff)<4*FEEDBACK_OFFSET || abs(abs(diff)-res)<4*FEEDBACK_OFFSET) {
         return true;
     } else {
         return false;

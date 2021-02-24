@@ -9,8 +9,8 @@
 #define BT_TX 19 //DUE RX
 
 #define ENCODER_RES (26*75)
-#define SPEED 255
 
+#define MOTOR0_SPEED 255
 #define MOTOR0_DIR_1 22
 #define MOTOR0_DIR_2 23
 #define MOTOR0_PWM 13
@@ -18,6 +18,8 @@
 #define ENCODER0_B 31
 #define ENCODER0_INT ENCODER0_A //pin21, ENCODER1_A
 
+
+#define MOTOR1_SPEED 255
 #define MOTOR1_DIR_1 24
 #define MOTOR1_DIR_2 25
 #define MOTOR1_PWM 12
@@ -25,20 +27,18 @@
 #define ENCODER1_B 33
 #define ENCODER1_INT ENCODER1_A //pin20
 
-EncoderMotor encMtr0 = EncoderMotor(MOTOR0_DIR_1, MOTOR0_DIR_2, MOTOR0_PWM, ENCODER0_A, ENCODER0_B, ENCODER_RES);
-EncoderMotor encMtr1 = EncoderMotor(MOTOR1_DIR_1, MOTOR1_DIR_2, MOTOR1_PWM, ENCODER1_A, ENCODER1_B, ENCODER_RES, true);
-MotorController mtrController = MotorController(SPEED, &encMtr0, &encMtr1);
+EncoderMotor encMtr0 = EncoderMotor(MOTOR0_SPEED, MOTOR0_DIR_1, MOTOR0_DIR_2, MOTOR0_PWM, ENCODER0_A, ENCODER0_B, ENCODER_RES);
+EncoderMotor encMtr1 = EncoderMotor(MOTOR1_SPEED, MOTOR1_DIR_1, MOTOR1_DIR_2, MOTOR1_PWM, ENCODER1_A, ENCODER1_B, ENCODER_RES, true);
+MotorController mtrController = MotorController(&encMtr0, &encMtr1);
 Motion motion = Motion(mtrController);
 Thread serialThread = Thread();
 
 //attach callbacks to interrupts
 void encoderCallback0() {
-  encMtr0.updateEncoder();
   mtrController.updateMotorControl(0);
 }
 
 void encoderCallback1() {
-  encMtr1.updateEncoder();
   mtrController.updateMotorControl(1);
 }
 
@@ -82,17 +82,23 @@ void loop() {
       Serial.println(msg);
       switch(msg) { 
         case 'w':
-          motion.goForward();  break;
+          motion.goForward();
+          break;
         case 's':
-          motion.goBackward();  break;
+          motion.goBackward();
+          break;
         case 'a':
-          motion.goTurnLeft();  break;
+          motion.goTurnLeft();
+          break;
         case 'd':
-          motion.goTurnRight();  break;
+          motion.goTurnRight();
+          break;
         case 'q':
-          motion.goForwardLeft();  break;
+          motion.goForwardLeft();
+          break;
         case 'e':
-          motion.goForwardRight();  break;
+          motion.goForwardRight();
+          break;
         default:  
           break;
       }

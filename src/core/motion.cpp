@@ -11,7 +11,7 @@ void Motion::goForward() {
 }
 
 void Motion::goForwardRight() {
-    mtrController.rotateMotorForward(1);
+    mtrController.rotateMotorForward(0);
 }
 
 void Motion::goBackward() {
@@ -20,15 +20,15 @@ void Motion::goBackward() {
 }
 
 void Motion::goForwardLeft() {
-    mtrController.rotateMotorForward(0);
+    mtrController.rotateMotorForward(1);
 }
 
 void Motion::goTurnLeft() {
-    mtrController.rotateMotorForward(0);
-    mtrController.rotateMotorBackward(1);
+    mtrController.rotateMotorForward(1);
+    mtrController.rotateMotorBackward(0);
 }
 
 void Motion::goTurnRight() {
-    mtrController.rotateMotorForward(1);
-    mtrController.rotateMotorBackward(0);
+    mtrController.rotateMotorForward(0);
+    mtrController.rotateMotorBackward(1);
 }

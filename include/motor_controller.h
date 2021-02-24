@@ -8,9 +8,9 @@
 
 class EncoderMotor {
   public:
-    EncoderMotor(uint8_t dir1, uint8_t dir2, uint8_t pwm,
+    EncoderMotor(uint8_t speed, uint8_t dir1, uint8_t dir2, uint8_t pwm,
                 uint8_t encoder1, uint8_t encoder2, uint16_t encoderRes, bool isReversed=false) :
-                ENCODER_RES(encoderRes), DIR1(dir1), DIR2(dir2), PWM_PIN(pwm),
+                SPEED(speed), ENCODER_RES(encoderRes), DIR1(dir1), DIR2(dir2), PWM_PIN(pwm),
                 ENCODER1(encoder1), ENCODER2(encoder2), IS_REVERSED(isReversed) {
       pulse = 0;
     }
@@ -23,7 +23,8 @@ class EncoderMotor {
     void adjustZero();
     float getPositionDegree();
     int getPositionPulse();
-
+    
+    const uint8_t SPEED;
     const uint16_t ENCODER_RES;
 
   private:
@@ -34,15 +35,14 @@ class EncoderMotor {
 
 class MotorController {
   public:
-    MotorController(int, EncoderMotor*, EncoderMotor*);
-    void rotateMotorForward(int);
-    void rotateMotorBackward(int);
-    void updateMotorControl(int);
+    MotorController(EncoderMotor*, EncoderMotor*);
+    void rotateMotorForward(int, uint16_t delta = 0);
+    void rotateMotorBackward(int, uint16_t delta = 0);
+    void updateMotorControl(int, bool debug = false);
     bool synchronized();
     bool checkStop(int);
 
   private:
-    const int VELOCITY;
     EncoderMotor** encMtrs;
     int* deltaPulse;
 };
